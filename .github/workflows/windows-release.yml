@@ -1,0 +1,52 @@
+name: Build Windows EXE Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/windows-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: 'x86'
+
+      - name: Install build dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+          if (Test-Path requirements.txt) { python -m pip install -r requirements.txt }
+
+      - name: Build Extended Map Lab
+        shell: pwsh
+        run: |
+          pyinstaller --noconfirm --clean --onefile --console --name War2ExtendedMapLab war2_extended_map_lab.py
+          Get-FileHash dist\War2ExtendedMapLab.exe -Algorithm SHA256 | Format-List
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v0.9.5
+          TITLE: War2 Extended Map Lab 0.9.5 - Windows EXE
+        run: |
+          $exe = "dist\War2ExtendedMapLab.exe"
+          $testMap = "maps\Extended_256x256_Test.pud"
+          $notes = "Portable 32-bit Windows runtime utility for the stable 256x256 Remastered map path. Runtime-only; Warcraft II.exe on disk is not modified."
+          gh release view $env:TAG --repo $env:GITHUB_REPOSITORY *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:TAG $exe $testMap --clobber --repo $env:GITHUB_REPOSITORY
+          } else {
+            gh release create $env:TAG $exe $testMap --target $env:GITHUB_SHA --title $env:TITLE --notes $notes --repo $env:GITHUB_REPOSITORY
+          }
