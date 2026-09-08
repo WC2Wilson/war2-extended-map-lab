@@ -1,0 +1,14 @@
+00000000 T dot_hook
+0000016e t dot_fallback
+0000017b T click_hook
+0000021c t click_fallback
+00000227 T camera_hook
+00000311 t camera_fallback
+0000031e T fog_entry
+0000038a t fog_trampoline
+00000395 T fog_restore
+000003c8 T terrain_entry
+00000434 t terrain_trampoline
+00000445 T terrain_restore
+00000478 T marker
+00000484 T state

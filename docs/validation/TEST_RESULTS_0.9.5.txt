@@ -1,0 +1,23 @@
+War2 Extended Map Lab 0.9.5 — Offline Test Results
+=====================================================
+
+PASS test_cave_template
+PASS test_crash23_opcode_safe_relocations
+PASS test_exact_hook_sites
+PASS test_native_raster_side_buckets
+PASS test_resample_32x96_uses_native_96_raster_without_padding
+PASS test_resample_all_representative_rectangles
+6 minimap-only tests passed
+PASS test_exact_scroll_hook_sites
+PASS test_hook_jump_round_trip
+PASS test_legacy_camera_formula
+PASS test_scroll_cave_layout_and_marker
+4 native-scroll tests passed
+All-size self-test passed: 65536 combinations, 8 stride buckets, max padding 65311 cells.
+Executable: /mnt/data/Warcraft II(5).exe
+SHA-256: 1a396a77b123bbae46c6a2d92adc2ec6714134c24023ed8218f7a160a80ec162
+Static sites verified: 82
+Patch records: 52
+Dimension combinations: 65536
+Storage stride buckets: 8
+RESULT: PASS

@@ -1,0 +1,44 @@
+War2 Extended Map Lab 0.9.5
+============================
+
+Baseline
+--------
+Built directly from the stable 0.9.0/0.9.3 branch. The 0.10 and 0.11
+compact-storage experiments are not included.
+
+Fix: repeated world terrain at the end of rectangular maps
+-----------------------------------------------------------
+The 0.9 rectangle loader intentionally stores a 32x96 map in a safe 96x96
+backing grid. Warcraft's native camera clamp still read that backing side as
+both width and height. It therefore allowed the camera to scroll into hidden
+columns 32..95, where the renderer displayed the expanded/padded rows as
+repeating strips.
+
+The legacy source supplies the correct model in reference module:
+
+  gwMapMtxRgt = gwMapMtxWdt - gwGAMEMAP_MTX_WDT;
+  gwMapMtxBtm = gwMapMtxHgt - gwGAMEMAP_MTX_HGT;
+
+0.9.5 adds four native hooks to the remaster's two camera-bound routines:
+
+  RVA 0x0AFD00  current-camera logical width
+  RVA 0x0AFD3D  current-camera logical height
+  RVA 0x0AFD73  set-position logical width
+  RVA 0x0AFDC0  set-position logical height
+
+The hooks calculate each boundary from the logical dimension and the live
+viewport size. Row addressing remains on the proven square backing stride.
+
+Unchanged
+---------
+- 256x256 square-map path
+- 0.9.0 loader/allocation/navigation/autosave patches
+- 0.9.3 opcode-safe rectangular minimap cave
+- rectangular 96x96 minimap-only raster and native final stretch
+- AI/pathing/building padding guards
+
+Safety
+------
+The logical dimensions are zero before a rectangle is loaded. The native hooks
+fall back to Warcraft's stock square map-side global in that state and on square
+maps. All changes are process-memory only.
